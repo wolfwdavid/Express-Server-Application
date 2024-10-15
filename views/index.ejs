@@ -23,13 +23,5 @@
         <% }) %>
     </ul>
     <a href="/posts/new">Create New Post</a>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        socket.on('postLiked', (postId) => {
-            // Handle real-time updates for likes
-        });
-    </script>
 </body>
 </html>

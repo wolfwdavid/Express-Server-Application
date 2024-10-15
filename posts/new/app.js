@@ -1,7 +1,7 @@
 app.get('/posts', async (req, res) => {
     try {
         const posts = await Post.find();  // Fetch all posts from MongoDB
-        res.render('index', { posts });  // Render the template and pass the posts array
+        res.render('index', { posts });   // Pass the posts array to the EJS template
     } catch (error) {
         console.error('Error fetching posts:', error);
         res.status(500).send('Server Error');
