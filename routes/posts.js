@@ -1,7 +1,19 @@
 const express = require('express');
 const Post = require('../models/Post');
-const multer = require('multer');
 const jwtAuth = require('../middleware/jwtAuth');
+const multer = require('multer');  // <-- Add this line to import multer
+
+// Configure Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage });  // <-- Define the upload middleware here
+
 const router = express.Router();
 
 // Render the posts page
@@ -15,7 +27,7 @@ router.get('/new', (req, res) => {
     res.render('new');
 });
 
-// Create a new post (protected route)
+// Create a new post (protected route with image upload)
 router.post('/', jwtAuth, upload.single('image'), async (req, res) => {
     const { title, content } = req.body;
     const imageUrl = req.file ? req.file.path : null;
@@ -28,24 +40,6 @@ router.post('/', jwtAuth, upload.single('image'), async (req, res) => {
     });
 
     await newPost.save();
-    res.redirect('/posts');
-});
-
-// Like a post (socket.io)
-router.post('/:id/like', async (req, res) => {
-    const post = await Post.findById(req.params.id);
-    if (post) {
-        post.likes += 1;
-        await post.save();
-        res.redirect('/posts');
-    } else {
-        res.status(404).send('Post not found');
-    }
-});
-
-// Delete a post (protected)
-router.post('/:id/delete', jwtAuth, async (req, res) => {
-    await Post.findByIdAndDelete(req.params.id);
     res.redirect('/posts');
 });
 
