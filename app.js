@@ -17,12 +17,9 @@ const io = socketIo(server);
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/myexpressapp', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error(err));
+mongoose.connect('mongodb://localhost:27017/myexpressapp')
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error(err));
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
