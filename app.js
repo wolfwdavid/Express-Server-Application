@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Define a route for the root URL "/"
 app.get('/', (req, res) => {
-    res.send('Welcome to the homepage!');  // You can also render a view like res.render('index');
+    res.render('index');  // Render the "index.ejs" view from the "views" folder
 });
 
 // Add other routes and middlewares here
