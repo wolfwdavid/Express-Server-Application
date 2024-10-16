@@ -17,16 +17,21 @@
                 <% if (post.imageUrl) { %>
                     <img src="<%= post.imageUrl %>" alt="Post Image" width="200">
                 <% } %>
-                
+
+                <!-- Form for liking the post (Optional) -->
                 <form action="/posts/<%= post._id %>/like" method="POST">
                     <button type="submit">Like</button>
                 </form>
+
+                <!-- Form for deleting the post -->
                 <form action="/posts/<%= post._id %>/delete" method="POST">
                     <button type="submit">Delete</button>
                 </form>
             </li>
         <% }) %>
     </ul>
+
+    <!-- Link to create a new post -->
     <a href="/posts/new">Create New Post</a>
 </body>
 </html>

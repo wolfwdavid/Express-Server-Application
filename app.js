@@ -1,71 +1,70 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-const Post = require('./models/Post');  // Import the Post model
+const Post = require('./models/Post');  // Assuming the Post model is in models/Post.js
 
-// Initialize the Express app
+// Initialize app
 const app = express();
-
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/myexpressapp')
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error(err));
+mongoose.connect('mongodb://localhost:27017/myexpressapp', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error(err));
 
-// Set EJS as the view engine
+// Set view engine to EJS
 app.set('view engine', 'ejs');
 
-// Use Express's built-in body parser middleware to handle form submissions
+// Middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
-// Serve static files from the "public" folder
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route to render the form for creating a new post
-app.get('/posts/new', (req, res) => {
-    res.render('new');  // Render the new.ejs form to create a new post
+// Route to display all posts
+app.get('/', async (req, res) => {
+    try {
+        const posts = await Post.find();
+        res.render('index', { posts });
+    } catch (err) {
+        res.status(500).send('Error fetching posts: ' + err.message);
+    }
 });
 
-// ***** PASTE THE POST ROUTE HERE *****
+// Route to create a new post
 app.post('/posts', async (req, res) => {
-    console.log(req.body);  // Check if imageUrl is coming through correctly
-
     const { title, content, imageUrl } = req.body;
 
-    // Validation: Ensure both title and content are provided
     if (!title || !content) {
         return res.status(400).send('Title and content are required!');
     }
 
-    // Create a new post object with the provided data
     const newPost = new Post({
-        title,            // Title of the post
-        content,          // Content of the post
-        likes: 0,         // Initialize likes to 0
-        imageUrl: imageUrl || null  // Optional imageUrl, default to null if not provided
+        title,
+        content,
+        likes: 0,
+        imageUrl: imageUrl || null
     });
 
     try {
-        // Attempt to save the new post to MongoDB
         await newPost.save();
-        
-        // Redirect the user to the homepage after the post is successfully saved
         res.redirect('/');
     } catch (err) {
-        // If there's an error during save, send a 500 status and log the error message
         res.status(500).send('Error saving post: ' + err.message);
     }
 });
 
-// Route to display all posts on the homepage
-app.get('/', async (req, res) => {
+// Route to delete a post by its ID
+app.post('/posts/:id/delete', async (req, res) => {
     try {
-        const posts = await Post.find();  // Fetch all posts from MongoDB
-        res.render('index', { posts });  // Render the index.ejs template with the posts
+        const postId = req.params.id;
+        await Post.findByIdAndDelete(postId);  // Find and delete the post by its ID
+        res.redirect('/');  // Redirect back to the homepage after deletion
     } catch (err) {
-        res.status(500).send('Error fetching posts: ' + err.message);
+        res.status(500).send('Error deleting post: ' + err.message);
     }
 });
 
