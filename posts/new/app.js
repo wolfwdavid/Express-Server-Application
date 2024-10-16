@@ -3,10 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
-const jwtAuth = require('./middleware/jwtAuth');
-const multer = require('multer');
 const Post = require('./models/Post');
-const Comment = require('./models/Comment');
 
 // Initialize app and server for socket.io
 const app = express();
@@ -23,45 +20,34 @@ mongoose.connect('mongodb://localhost:27017/myexpressapp')
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 
-// Use Express's built-in body-parser
-app.use(express.urlencoded({ extended: true }));
+// Use Express's built-in body parser middleware
+app.use(express.urlencoded({ extended: true })); // To handle form submissions
+app.use(express.json()); // To handle JSON data
 
-// Serve static files
+// Serve static files from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Setup multer for file uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
+// Route to render the form for creating a new post
+app.get('/posts/new', (req, res) => {
+    res.render('new');
 });
-const upload = multer({ storage });
 
-// Routes
-app.use('/auth', require('./routes/auth'));
-app.use('/posts', require('./routes/posts'));
-
-// Socket.io for real-time updates
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    socket.on('likePost', (postId) => {
-        io.emit('postLiked', postId);
+// Route to handle form submission and create a new post
+app.post('/posts', async (req, res) => {
+    const { title, imageUrl } = req.body;
+    const newPost = new Post({
+        title,
+        likes: 0,
+        imageUrl
     });
+    await newPost.save();
+    res.redirect('/');
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
-
-// Redirect the root route ("/") to "/posts"
-app.get('/', (req, res) => {
-    res.redirect('/posts');  // Automatically redirect to "/posts"
+// Route to display all posts
+app.get('/', async (req, res) => {
+    const posts = await Post.find();
+    res.render('index', { posts });
 });
 
 // Start the server

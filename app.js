@@ -3,10 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
-const jwtAuth = require('./middleware/jwtAuth');
-const multer = require('multer');
 const Post = require('./models/Post');
-const Comment = require('./models/Comment');
 
 // Initialize app and server for socket.io
 const app = express();
@@ -30,15 +27,28 @@ app.use(express.json()); // To handle JSON data
 // Serve static files from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Define a route for the root URL "/"
-app.get('/', async (req, res) => {
-    // Example: Fetch posts from a database (using Mongoose)
-    const posts = await Post.find();  // Make sure you have a Post model and some data in MongoDB
+// Route to render the form for creating a new post
+app.get('/posts/new', (req, res) => {
+    res.render('new');
+});
 
-    // Pass the posts array to the EJS template
+// Route to handle form submission and create a new post
+app.post('/posts', async (req, res) => {
+    const { title, imageUrl } = req.body;
+    const newPost = new Post({
+        title,
+        likes: 0,
+        imageUrl
+    });
+    await newPost.save();
+    res.redirect('/');
+});
+
+// Route to display all posts
+app.get('/', async (req, res) => {
+    const posts = await Post.find();
     res.render('index', { posts });
 });
-// Add other routes and middlewares here
 
 // Start the server
 server.listen(PORT, () => {
