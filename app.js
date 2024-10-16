@@ -31,10 +31,13 @@ app.use(express.json()); // To handle JSON data
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Define a route for the root URL "/"
-app.get('/', (req, res) => {
-    res.render('index');  // Render the "index.ejs" view from the "views" folder
-});
+app.get('/', async (req, res) => {
+    // Example: Fetch posts from a database (using Mongoose)
+    const posts = await Post.find();  // Make sure you have a Post model and some data in MongoDB
 
+    // Pass the posts array to the EJS template
+    res.render('index', { posts });
+});
 // Add other routes and middlewares here
 
 // Start the server
