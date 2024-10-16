@@ -5,7 +5,7 @@ const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
 
 const router = express.Router();
-const JWT_SECRET = 'your_jwt_secret_key';  // Store securely
+const JWT_SECRET = process.env.JWT_SECRET || 'your_fallback_jwt_secret_key';  // Store securely
 
 // Register new user
 router.post('/register', [
@@ -18,6 +18,13 @@ router.post('/register', [
     }
 
     const { username, password } = req.body;
+
+    // Check if username is already taken
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+        return res.status(400).json({ error: 'Username is already taken' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {

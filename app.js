@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const http = require('http');
@@ -23,6 +22,17 @@ mongoose.connect('mongodb://localhost:27017/myexpressapp')
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve static files
+// Use Express's built-in body parser middleware
+app.use(express.urlencoded({ extended: true })); // To handle form submissions
+app.use(express.json()); // To handle JSON data
+
+// Serve static files from the "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Add your routes and other middlewares here
+
+// Start the server
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

@@ -1,34 +1,70 @@
-app.get('/posts', async (req, res) => {
-    try {
-        const posts = await Post.find();  // Fetch all posts from MongoDB
-        res.render('index', { posts });   // Pass the posts array to the EJS template
-    } catch (error) {
-        console.error('Error fetching posts:', error);
-        res.status(500).send('Server Error');
+const express = require('express');
+const mongoose = require('mongoose');
+const path = require('path');
+const http = require('http');
+const socketIo = require('socket.io');
+const jwtAuth = require('./middleware/jwtAuth');
+const multer = require('multer');
+const Post = require('./models/Post');
+const Comment = require('./models/Comment');
+
+// Initialize app and server for socket.io
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+const PORT = process.env.PORT || 3000;
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/myexpressapp')
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error(err));
+
+// Set EJS as the view engine
+app.set('view engine', 'ejs');
+
+// Use Express's built-in body-parser
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Setup multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
+const upload = multer({ storage });
 
-app.post('/posts/:id/like', async (req, res) => {
-    try {
-        const post = await Post.findById(req.params.id);  // Find the post by its ID
-        if (!post) {
-            return res.status(404).send('Post not found');
-        }
-        post.likes += 1;  // Increment the likes
-        await post.save();  // Save the post
-        res.redirect('/posts');  // Redirect back to the posts page
-    } catch (error) {
-        console.error('Error liking the post:', error);
-        res.status(500).send('Server Error');
-    }
+// Routes
+app.use('/auth', require('./routes/auth'));
+app.use('/posts', require('./routes/posts'));
+
+// Socket.io for real-time updates
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    socket.on('likePost', (postId) => {
+        io.emit('postLiked', postId);
+    });
 });
 
-app.post('/posts/:id/delete', async (req, res) => {
-    try {
-        await Post.findByIdAndDelete(req.params.id);  // Find and delete the post by its ID
-        res.redirect('/posts');  // Redirect back to the posts page
-    } catch (error) {
-        console.error('Error deleting the post:', error);
-        res.status(500).send('Server Error');
-    }
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
+// Redirect the root route ("/") to "/posts"
+app.get('/', (req, res) => {
+    res.redirect('/posts');  // Automatically redirect to "/posts"
+});
+
+// Start the server
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });

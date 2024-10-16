@@ -1,7 +1,7 @@
 const express = require('express');
 const Post = require('../models/Post');
 const jwtAuth = require('../middleware/jwtAuth');
-const multer = require('multer');  // <-- Add this line to import multer
+const multer = require('multer');
 
 // Configure Multer
 const storage = multer.diskStorage({
@@ -9,10 +9,11 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
+        // Use backticks here to create a template literal
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
-const upload = multer({ storage });  // <-- Define the upload middleware here
+const upload = multer({ storage });
 
 const router = express.Router();
 
