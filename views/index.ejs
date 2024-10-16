@@ -20,12 +20,12 @@
                     <img src="<%= post.imageUrl %>" alt="Post Image" width="200">
                 <% } %>
 
-                <!-- Form to like the post -->
+                <!-- like the post -->
                 <form action="/posts/<%= post._id %>/like" method="POST">
                     <button type="submit">Like</button>
                 </form>
 
-                <!-- Form to delete the post -->
+                <!-- Delete the post -->
                 <form action="/posts/<%= post._id %>/delete" method="POST">
                     <button type="submit">Delete</button>
                 </form>

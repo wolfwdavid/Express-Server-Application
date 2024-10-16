@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        // Use backticks here to create a template literal
+        // Backticks here to create a template literal
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
@@ -17,18 +17,18 @@ const upload = multer({ storage });
 
 const router = express.Router();
 
-// Render the posts page
+// Render posts page
 router.get('/', async (req, res) => {
     const posts = await Post.find();
     res.render('index', { posts });
 });
 
-// Render the new post form
+// Render new post form
 router.get('/new', (req, res) => {
     res.render('new');
 });
 
-// Create a new post (protected route with image upload)
+// Create a new post (*protected route with image upload*)
 router.post('/', jwtAuth, upload.single('image'), async (req, res) => {
     const { title, content } = req.body;
     const imageUrl = req.file ? req.file.path : null;

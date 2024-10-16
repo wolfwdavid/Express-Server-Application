@@ -2,14 +2,14 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'your_jwt_secret_key';
 
 module.exports = function (req, res, next) {
-    // Check if Authorization header exists
+    // Authorization header exists
     const authHeader = req.header('Authorization');
     
     if (!authHeader) {
         return res.status(401).json({ error: 'No token, authorization denied' });
     }
 
-    // Extract token from header and remove 'Bearer ' prefix
+    // Extract token from header and remove 'Bearer' prefix
     const token = authHeader.replace('Bearer ', '');
 
     if (!token) {
@@ -17,7 +17,7 @@ module.exports = function (req, res, next) {
     }
 
     try {
-        // Verify token and extract user information
+        // Verify token, extract user information
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded.userId;  // Assuming your JWT contains userId
         next();  // Pass control to the next middleware or route handler
@@ -26,5 +26,5 @@ module.exports = function (req, res, next) {
         return res.status(401).json({ error: 'Token is not valid' });
     }
 };
-app.use(express.urlencoded({ extended: true }));  // To handle form submissions
-app.use(express.json());  // To handle JSON data
+app.use(express.urlencoded({ extended: true }));  // Submissions
+app.use(express.json());  //JSON data

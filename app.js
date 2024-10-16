@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
-const Post = require('./models/Post');  // Assuming you have a Post model defined in models/Post.js
+const Post = require('./models/Post');  //  model defined in models/Post.js (Working)
 
 // Initialize app and server for socket.io
 const app = express();
@@ -12,7 +12,7 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB
+// Connect to MongoDB (Error fixed)
 mongoose.connect('mongodb://localhost:27017/myexpressapp', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
@@ -21,7 +21,7 @@ mongoose.connect('mongodb://localhost:27017/myexpressapp', { useNewUrlParser: tr
 app.set('view engine', 'ejs');
 
 // Use Express's built-in body parser middleware
-app.use(express.urlencoded({ extended: true })); // To handle form submissions
+app.use(express.urlencoded({ extended: true })); // Handle form submissions
 app.use(express.json()); // To handle JSON data
 
 // Serve static files from the "public" folder
@@ -90,14 +90,14 @@ app.post('/posts/:id/like', async (req, res) => {
 app.post('/posts/:id/delete', async (req, res) => {
     try {
         const postId = req.params.id;
-        await Post.findByIdAndDelete(postId);  // Find the post by ID and delete it
-        res.redirect('/');  // Redirect back to the homepage after deletion
+        await Post.findByIdAndDelete(postId);  // Find post by ID and delete it
+        res.redirect('/');  // Redirect back to the homepage after deletion (pending)
     } catch (err) {
         res.status(500).send('Error deleting post: ' + err.message);
     }
 });
 
-// Start the server
+// Server Start
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
