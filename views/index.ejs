@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Posts</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <h1>All Posts</h1>
+
     <ul>
-        <% posts.forEach(post => { %>  <!-- Loop through each post -->
+        <% posts.forEach(post => { %>
             <li>
                 <h2><%= post.title %></h2>
                 <p><%= post.content %></p>
                 <p><%= post.likes %> Likes</p>
 
-                <!-- Conditionally display the image if an imageUrl exists -->
                 <% if (post.imageUrl) { %>
                     <img src="<%= post.imageUrl %>" alt="Post Image" width="200">
                 <% } %>
 
-                <!-- Form for liking the post (Optional) -->
+                <!-- Form to like the post -->
                 <form action="/posts/<%= post._id %>/like" method="POST">
                     <button type="submit">Like</button>
                 </form>
 
-                <!-- Form for deleting the post -->
+                <!-- Form to delete the post -->
                 <form action="/posts/<%= post._id %>/delete" method="POST">
                     <button type="submit">Delete</button>
                 </form>
@@ -31,7 +33,6 @@
         <% }) %>
     </ul>
 
-    <!-- Link to create a new post -->
     <a href="/posts/new">Create New Post</a>
 </body>
 </html>
