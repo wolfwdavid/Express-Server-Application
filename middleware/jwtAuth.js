@@ -26,3 +26,5 @@ module.exports = function (req, res, next) {
         return res.status(401).json({ error: 'Token is not valid' });
     }
 };
+app.use(express.urlencoded({ extended: true }));  // To handle form submissions
+app.use(express.json());  // To handle JSON data

@@ -9,7 +9,7 @@
     <ul>
         <% posts.forEach(post => { %>
             <li>
-                <%= post.title %> - <%= post.likes %> Likes
+                <strong><%= post.title %></strong> - <%= post.likes %> Likes
                 <% if (post.imageUrl) { %>
                     <img src="/<%= post.imageUrl %>" alt="Post Image" width="100">
                 <% } %>
