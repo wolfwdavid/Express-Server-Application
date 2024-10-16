@@ -12,4 +12,4 @@ This is a simple social media-like platform where users can create, view, update
 ## Getting Started
 
 1. Clone the repository.
-2. Install the dependencies:
+2. Install the dependencies
