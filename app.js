@@ -30,7 +30,12 @@ app.use(express.json()); // To handle JSON data
 // Serve static files from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Add your routes and other middlewares here
+// Define a route for the root URL "/"
+app.get('/', (req, res) => {
+    res.send('Welcome to the homepage!');  // You can also render a view like res.render('index');
+});
+
+// Add other routes and middlewares here
 
 // Start the server
 server.listen(PORT, () => {
