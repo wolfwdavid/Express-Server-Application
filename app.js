@@ -29,28 +29,47 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Route to render the form for creating a new post
 app.get('/posts/new', (req, res) => {
-    res.render('new');
+    res.render('new');  // Render the form to create a new post
 });
 
 // Route to handle form submission and create a new post
 app.post('/posts', async (req, res) => {
-    const { title, imageUrl } = req.body;
+    const { title, content, imageUrl } = req.body;  // Ensure 'content' is captured from the form
+
+    // Check if both title and content are provided
+    if (!title || !content) {
+        return res.status(400).send('Title and content are required!');
+    }
+
+    // Create a new post with the provided data
     const newPost = new Post({
         title,
+        content,
         likes: 0,
-        imageUrl
+        imageUrl: imageUrl || null  // Optional imageUrl
     });
-    await newPost.save();
-    res.redirect('/');
+
+    try {
+        // Save the new post to MongoDB
+        await newPost.save();
+        res.redirect('/');  // Redirect to the home page after creation
+    } catch (err) {
+        res.status(500).send('Error saving post: ' + err.message);
+    }
 });
 
 // Route to display all posts
 app.get('/', async (req, res) => {
-    const posts = await Post.find();
-    res.render('index', { posts });
+    try {
+        const posts = await Post.find();  // Fetch all posts from MongoDB
+        res.render('index', { posts });  // Render the index.ejs template and pass the posts
+    } catch (err) {
+        res.status(500).send('Error fetching posts: ' + err.message);
+    }
 });
 
 // Start the server
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+

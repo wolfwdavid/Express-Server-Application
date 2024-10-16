@@ -5,16 +5,20 @@
 </head>
 <body>
     <h1>Create a New Post</h1>
-    <form action="/posts" method="POST" enctype="multipart/form-data">
+    <form action="/posts" method="POST">
+        <!-- Title Input -->
         <label for="title">Title:</label>
-        <input type="text" name="title" id="title" required>
+        <input type="text" name="title" id="title" required> <!-- Ensure name="title" -->
 
+        <!-- Content Input -->
         <label for="content">Content:</label>
-        <textarea name="content" id="content" required></textarea>
+        <textarea name="content" id="content" required></textarea> <!-- Ensure name="content" -->
 
+        <!-- Image URL Input (Optional) -->
         <label for="imageUrl">Image URL (optional):</label>
         <input type="text" name="imageUrl" id="imageUrl">
 
+        <!-- Submit Button -->
         <button type="submit">Create Post</button>
     </form>
 </body>
